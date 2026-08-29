@@ -1,84 +1,74 @@
 # Minishell
 
-Un shell minimaliste proche de bash, ecrit en C dans le cadre du projet 42.
-Il reprend les bases d un vrai shell : prompt interactif, commandes externes,
-builtins, pipes et redirections, avec gestion des quotes, des variables
-d environnement et des signaux.
+Interpréteur de commandes (shell) minimaliste en C, réalisé avec **libft** et
+la bibliothèque **readline** dans le cadre du projet **42**.
 
--------------------------------------------------------------------------------
-## - FONCTIONNALITES
+[![Langage C](https://img.shields.io/badge/Langage-C-00599C)](#)
+[![Projet 42](https://img.shields.io/badge/Projet-42-000000)](#)
+[![Compilateur clang](https://img.shields.io/badge/Compilateur-clang-262D3D)](#)
+[![Bibliothèque readline](https://img.shields.io/badge/Biblioth%C3%A8que-readline-7B2CBF)](#)
+[![Build Makefile](https://img.shields.io/badge/Build-Makefile-8B0000)](#)
 
-	- Prompt interactif colore (chemin courant) + historique readline.
-	- Builtins : echo (-n), cd, pwd, export, unset, env, exit.
-	- Commandes externes : resolution via PATH (execve) et ./executable.
-	- Pipes : une ou plusieurs commandes chainees avec |.
-	- Redirections : redirection simple de sortie >.
-	- Quotes : double " et simple ' (suppression des quotes).
-	- Variables d environnement : $VAR et code de sortie $?.
-	- Signaux : Ctrl-C (nouvelle ligne + re-affichage du prompt), Ctrl-\ ignore.
--------------------------------------------------------------------------------
-## - CONFIGURATION:
+---
 
-	Prerequis :
-		- make
-		- un compilateur C (clang)
-		- libreadline-dev (headers de la bibliotheque readline)
+## Stack Technique
 
-	Installation des dependances (Debian/Ubuntu) :
-		sudo apt install clang libreadline-dev
+- **Langage** : C
+- **Compilateur** : clang
+- **Bibliothèques** : libft (interne), readline
+- **Build** : Makefile
 
-	Installation des dependances (macOS) :
-		brew install readline
--------------------------------------------------------------------------------
-## - LANCEMENT:
+---
 
-	- Compiler : make re
-	- Lancer   : ./minishell
--------------------------------------------------------------------------------
-## - UTILISATION:
+## Fonctionnalités
 
-	Quelques exemples de commandes :
+- **Builtins** : `echo` (`-n`), `cd`, `pwd`, `export`, `unset`, `env`, `exit`
+- **Commandes externes** : résolution via `PATH` (`execve`) et `./exécutable`
+- **Pipes** : enchaînement simple et multiple avec `|`
+- **Redirection** : redirection simple de sortie `>`
+- **Quotes** : simple `'` et double `"`
+- **Variables** : expansion `$VAR` et code de sortie `$?`
+- **Signaux** : `Ctrl-C` (réaffiche le prompt), `Ctrl-\` ignoré
+- **Prompt** : coloré (chemin courant) + historique readline
 
-		minishell> echo "hello minishell"
-		hello minishell
+---
 
-		minishell> ls -la | grep minishell
-		(remplit la sortie de ls -la)
+## Installation locale
 
-		minishell> echo $HOME
-		/home/alex
+# Prérequis (Debian/Ubuntu)
+sudo apt install clang libreadline-dev
 
-		minishell> echo $?
-		0
--------------------------------------------------------------------------------
-## - COMPILATION / TESTS:
+# Prérequis (macOS)
+brew install readline
 
-	Verification des fuites memoires (valgrind) :
+---
 
-		valgrind --leak-check=full --show-leak-kinds=all --suppressions=vsupp ./minishell
+## Commandes
 
-	Note : readline genere environ 215 blocs non liberes (connus, neutralises
-	via le fichier de suppressions vsupp).
--------------------------------------------------------------------------------
-## - STRUCTURE DU PROJET:
+Compilation | Description
+`make re` | Compiler le projet
+`./minishell` | Lancer le shell
 
-	Minishell/
-	|-- Makefile
-	|-- minishell.h
-	|-- *.c            (sources du shell)
-	|-- libft/         (bibliotheque interne)
-	|-- minishell_tester/ (tests externes du projet 42)
-	|-- utils/         (sujets pdf, notes)
-	`-- vsupp          (suppressions valgrind pour readline)
--------------------------------------------------------------------------------
-## - LIMITATIONS:
+---
 
-	- Redirections >> et < non implementees (pas de heredoc).
-	- Quotes : pas de distinction semantique double/simple, ni d imbrication.
-	- Fuites memoires connues liees a readline (~215 blocs).
--------------------------------------------------------------------------------
-## - AUTEURS:
+## Tests
 
-	- vsaura
-	- alamizan
--------------------------------------------------------------------------------
+# Vérification des fuites mémoire
+valgrind --leak-check=full --show-leak-kinds=all --suppressions=vsupp ./minishell
+
+Note : readline génère environ 215 blocs non libérés (connus, neutralisés via
+le fichier de suppressions `vsupp`).
+
+---
+
+## Limitations
+
+- Redirections `>>` et `<` non implémentées (pas de heredoc).
+- Quotes : pas de distinction sémantique double/simple, ni d'imbrication.
+- Fuites mémoire connues liées à readline (~215 blocs).
+
+---
+
+## À Propos
+
+Développé par **vsaura** & **alamizan** - Étudiants 42.
