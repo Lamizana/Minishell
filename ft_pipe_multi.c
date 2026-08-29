@@ -78,6 +78,7 @@ void	ft_child(t_data *data, t_pipe *process, char *str, int i)
 // gets the stdin of the last pipe.
 void	ft_last_pipe_child(t_data *data, t_pipe *process, char *str, int flag)
 {
+	(void)flag;
 	if (process->prev_pipe != STDIN_FILENO)
 	{
 		dup2(process->prev_pipe, STDIN_FILENO);

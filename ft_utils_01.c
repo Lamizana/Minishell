@@ -19,7 +19,7 @@ void	sig_n(int sig)
 
 void	sig_handler(int sig)
 {
-	sig = 0;
+	(void)sig;
 	printf("\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();

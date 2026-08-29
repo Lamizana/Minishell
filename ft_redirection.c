@@ -68,11 +68,9 @@ static void	ft_redir_parent(t_data *data, t_pipe *process, char *str, pid_t pid)
 
 static void	redirection_execve(t_data *data, t_pipe *process, char *filename)
 {
-	int		i;
 	pid_t	pid;
 	char	*str;
 
-	i = 0;
 	str = NULL;
 	if (pipe(process->fd) == -1)
 	{
