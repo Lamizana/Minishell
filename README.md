@@ -46,6 +46,7 @@ brew install readline
 ## Commandes
 
 Compilation | Description
+--- | ---
 `make re` | Compiler le projet
 `./minishell` | Lancer le shell
 
