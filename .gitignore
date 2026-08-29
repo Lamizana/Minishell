@@ -1,0 +1,6 @@
+# Build artifacts
+minishell
+*.o
+
+# libft
+libft/libft.a

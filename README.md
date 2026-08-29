@@ -1,230 +1,84 @@
 # Minishell
-Creer un  shell similaire à bash
--------------------------------------------------------------------------------
-## - Compilation:
 
-	 - valgrind --leak-check=full --show-leak-kinds=all --suppressions=vsupp ./minishell
-	 - readline genere 215 block non free.
--------------------------------------------------------------------------------
-## - RESSOURCES:
-
-	- SCL 	--> Shell Command Language.
-	- Blog 	--> Pays du 42.
-	- 42sh 	--> architecture d un shell.
--------------------------------------------------------------------------------
-## - FONCTIONS AUTORISEES:
-
-	- readline 	--> obtient une ligne d un utilisateur.
-	- add_history --> enregistre la commande transmise.
-	- acces		--> verifie les permissions utilisateur a un fichier.
-	- execve	--> execute un programme.
-	- fork		--> cree un processus fil.
-	- getenv	--> recupere le contenue d une variable d environnement.
-	- readddir 	--> consulte un repertoire.
-	- open		-->
-	- read		-->
-	- close		-->
-	- wait		-->
-	- waitpid	-->
-	- wait3		-->
-	- wait4		-->
-
-- Entree standard -> STDIN_FILENO == 0.
-> Associer au clavier, lit ce que jecris dessus.
-
-- Sortie standard -> STDOUT_FILENO == 1.
-> Affiche le contenu de notre programme (genre putstr) sur la sortie standard.
-
-- Sortie erreur -> STDERR_FILENO == 2.
-> Affiche sur la sortie d erreur.
+Un shell minimaliste proche de bash, ecrit en C dans le cadre du projet 42.
+Il reprend les bases d un vrai shell : prompt interactif, commandes externes,
+builtins, pipes et redirections, avec gestion des quotes, des variables
+d environnement et des signaux.
 
 -------------------------------------------------------------------------------
-## - REALISER UN SHELL QUI FONCTIONNE AVEC LES COMMANDES DE BASES.
+## - FONCTIONNALITES
 
-	(1) - PROMPT:
-		Afficher 1 prompt qui lit des commandes et qui ne fait rien, puis se raffiche.
-
-	(2) - LANCER UN PROGRAMME -> RECUPERER LE PATH:
-
-	(3) - LANCER UN PROGRAMME -> FORKER:
-		apres avoir lancer execve le programme  sarette.
-		fork() permet de dupliquer le programme pour eviter l arret du minishell.
-
-	(4) - LANCER UN PROGRAMME -> EXECVE:
+	- Prompt interactif colore (chemin courant) + historique readline.
+	- Builtins : echo (-n), cd, pwd, export, unset, env, exit.
+	- Commandes externes : resolution via PATH (execve) et ./executable.
+	- Pipes : une ou plusieurs commandes chainees avec |.
+	- Redirections : redirection simple de sortie >.
+	- Quotes : double " et simple ' (suppression des quotes).
+	- Variables d environnement : $VAR et code de sortie $?.
+	- Signaux : Ctrl-C (nouvelle ligne + re-affichage du prompt), Ctrl-\ ignore.
 -------------------------------------------------------------------------------
-<details>
-<summary>
+## - CONFIGURATION:
 
-## - DESCRIPTIF DES FONCTIONS
+	Prerequis :
+		- make
+		- un compilateur C (clang)
+		- libreadline-dev (headers de la bibliotheque readline)
 
-</summary>
-<br>
+	Installation des dependances (Debian/Ubuntu) :
+		sudo apt install clang libreadline-dev
 
-#### --> execve: 
-> #include <unistd.h>
-```C
-int execve(const char *file, char *const argv[], char *const envp[]);
-```
+	Installation des dependances (macOS) :
+		brew install readline
 -------------------------------------------------------------------------------
-#### -->  fork:
+## - LANCEMENT:
 
-```C
-pid_t fork(void);
-```
+	- Compiler : make re
+	- Lancer   : ./minishell
 -------------------------------------------------------------------------------
-#### --> getenv:
-> #include <stdlib.h>
+## - UTILISATION:
 
-```C
-char *getenv(const char *varName);
-```
-- recupere le contenue d une variable d environnement.
-- **varName**: definit le nom de la variable. EX: PATH, USER, ...
-- **valeur de retour**: renvoie NULL si varName n existe pas.
+	Quelques exemples de commandes :
+
+		minishell> echo "hello minishell"
+		hello minishell
+
+		minishell> ls -la | grep minishell
+		(remplit la sortie de ls -la)
+
+		minishell> echo $HOME
+		/home/alex
+
+		minishell> echo $?
+		0
 -------------------------------------------------------------------------------
-#### --> readline:
-> #include <stdio.h>
+## - COMPILATION / TESTS:
 
-> #include <readline/readline.h>
+	Verification des fuites memoires (valgrind) :
 
-> #include <readline/history.h>
+		valgrind --leak-check=full --show-leak-kinds=all --suppressions=vsupp ./minishell
 
-```C
-char *readline(const char *prompt);
-```
-- Lit une ligne du terminal.
-- Valeur de retour: 
-	- renvoie le texte.
-	- une ligne vide si la chaine est vide,
-	- si EOF est rencontrer -> NULL
+	Note : readline genere environ 215 blocs non liberes (connus, neutralises
+	via le fichier de suppressions vsupp).
 -------------------------------------------------------------------------------
-#### --> acces:
-> #include <unisd.h>
+## - STRUCTURE DU PROJET:
 
-```C
-int acces(const char *pathname, int mode);
-```
-- access verifie si le processus appelent peut acceder au fichier pathname.
-- mode indique les verifications d accesssibilite a effectuer.
-- valeur de retour: 
-	- renvoie 0 si il reussie.
-	- -1 si il echoue.
+	Minishell/
+	|-- Makefile
+	|-- minishell.h
+	|-- *.c            (sources du shell)
+	|-- libft/         (bibliotheque interne)
+	|-- minishell_tester/ (tests externes du projet 42)
+	|-- utils/         (sujets pdf, notes)
+	`-- vsupp          (suppressions valgrind pour readline)
 -------------------------------------------------------------------------------
-#### --> readdir:
-> #include <dirent.h>
+## - LIMITATIONS:
 
-```C
-int readdir(DIR *dir, struct dirent *entry, struct dient **result);
-```
+	- Redirections >> et < non implementees (pas de heredoc).
+	- Quotes : pas de distinction semantique double/simple, ni d imbrication.
+	- Fuites memoires connues liees a readline (~215 blocs).
 -------------------------------------------------------------------------------
-#### --> _kill_:
-> #include <sys/types.h>
+## - AUTEURS:
 
-> #include <signal.h>
-
-```C
-int kill(pid_t pid, int sig);
-```
-- Appel systeme: est utiliser pour envoyer n importe quel signal
-a n importe quel processus.
-- pid est positif -> sig est envoye au processus dont 
-l id est indiquer par pid.
-- pid vaut 0 -> sig est envoyer a tous les processus appartenant 
-au meme groupe que le groupe appelant.
-- pid vaut -1 -> sig est envoyer a tous les processus,
-sauf celui du PID.
-- sig vaut 0 -> aucun signal n est envoyer mais les conditions 
-d erreur sont verifiees.
-- Valeur retour: En cas de reussite -> 0, en cas d echec -> -1.
+	- vsaura
+	- alamizan
 -------------------------------------------------------------------------------
-#### --> _getpid_:
-> #include <sys/types.h>
-
-> #include <unistd.h>
-
-```C
-pid_t getpid(void);
-```
-- Renvoie l identifiant du processeur appelant.
-- Pas de cas d erreur.
--------------------------------------------------------------------------------
-#### --> pause:
-> #include <unistd.h>
-
-```C
-int pause(void);
-```
-- Force le processus appelant a s endormir jusqu a ce qu un signal soit recu,
-qu il le termine ou lui fasse invoquer une fonction de gestionnaire de signal.
-- Valeur renvoye: -1  et errno si le signal a ete interceptee et que le 
-gestionnaire c est termine.
--------------------------------------------------------------------------------
-#### --> sleep:
-> #include <unistd.h>
-
-```C
-unsigned int sleep(unsigned int nb_sec);
-```
-- Endort le processus jusqu a ce que nb_sec soit ecoulee,
-ou jusqu a ce que le signal soit interompue.
-- Valeur retour: renvoie 0 si le temps prevu c est ecoule,
-ou le nombre de secondes restantes si l appel a ete interompue.
--------------------------------------------------------------------------------
-#### --> usleep:
-> #include <unistd.h>
-
-```C
-unsigned int sleep(useconds_t usec);
-```
-- Meme chose que sleep.
-- Valeur retour: en cas de succe -> 0, en cas d erreur -> -1.
--------------------------------------------------------------------------------
-#### --> sygemptyset:
-> #include <signal.h>
-
-```C
-int sygemtyset(sigset_t *set);
-```
-- Initialise l ensemble de signaux pointer par set, de sorte que tous les signaux
-definit dans POSIX.1-2008 sint exclus.
-- Valeur de retour: renvoie 0 en cas de reussite et -1 en cas d erreur
-et defini errno pour indiquer l erreur.
--------------------------------------------------------------------------------
-#### --> sigaddset:
-```C
-int sigaddset(sigset_t, int signum);
-```
-- Ajoute le signal signum de set.
-- Valeur de retour: 0 en cas de succes et -1 en cas d erreur.
--------------------------------------------------------------------------------
-#### --> sygaction:
-```C
-int sigaction(int signum, const struc sigaction *act, struct sigaction *oldact);
-```
-```C
-struct sigaction
-{
-	void		(*sa_handler) (int);
-	void		(*sa_sigaction) (int, siginfo_t *, void *);
-	sigset_t	sa_mask;
-	int			sa_flags;
-	void		(*sa_restorer) (void);
-}
-```
-	- ATTENTION: initialiser -> struct sigaction sa = {0}
-- Appel systeme, sert a modifier l action effectuee par un processus 
-a la reception d un signal specifique.
-- signum indique le signal concerner.
-- Si act est non nul, la nouvelle action est definit par act.
-- Si oldact est non nul, l ancienne version est sauvegarder dans oldact.
-- sa_handler indique l action affecte au signal signum. Il recoit le numero
-de signal comme seul argument.
-- sa_flags: specifie un ensemble d attributs qui modifie le comportement
-du signal.
-- Valeur de retour: 0 si il reussi et -1 si il echoue.
-</details>
-
--------------------------------------------------------------------------------
-## - MAKEFILE:
--------------------------------------------------------------------------------
-
